@@ -120,19 +120,6 @@ export default function Hero() {
               <div className="w-full h-2 bg-black/20 absolute bottom-4 lg:bottom-6 rounded-full blur-sm"></div>
             </div>
 
-            {/* Floating icons */}
-            <motion.div animate={{ y: [-10, 10, -10] }} transition={{ repeat: Infinity, duration: 4, ease: "easeInOut" }} className="absolute top-4 right-4 lg:top-10 lg:right-10 w-12 h-12 lg:w-16 lg:h-16 bg-[#1DB954] rounded-xl lg:rounded-2xl shadow-lg flex items-center justify-center border border-white/10 rotate-12">
-               <span className="text-white font-bold text-lg lg:text-xl">S</span>
-            </motion.div>
-            <motion.div animate={{ y: [15, -15, 15] }} transition={{ repeat: Infinity, duration: 5, ease: "easeInOut", delay: 1 }} className="absolute bottom-10 right-2 lg:bottom-20 lg:right-4 w-14 h-14 lg:w-20 lg:h-20 bg-[#E50914] rounded-xl lg:rounded-2xl shadow-lg flex items-center justify-center border border-white/10 -rotate-6">
-               <span className="text-white font-bold text-xl lg:text-2xl">N</span>
-            </motion.div>
-            <motion.div animate={{ y: [-12, 12, -12] }} transition={{ repeat: Infinity, duration: 4.5, ease: "easeInOut", delay: 0.5 }} className="absolute top-12 left-2 lg:top-20 lg:left-4 w-10 h-10 lg:w-14 lg:h-14 bg-[#5865F2] rounded-xl lg:rounded-2xl shadow-lg flex items-center justify-center border border-white/10 -rotate-12">
-               <span className="text-white font-bold text-lg lg:text-xl">D</span>
-            </motion.div>
-            <motion.div animate={{ y: [10, -10, 10] }} transition={{ repeat: Infinity, duration: 6, ease: "easeInOut", delay: 2 }} className="absolute bottom-24 left-6 lg:bottom-32 lg:left-10 w-12 h-12 lg:w-16 lg:h-16 bg-gradient-to-tr from-pink-500 to-orange-400 rounded-xl lg:rounded-2xl shadow-lg flex items-center justify-center border border-white/10 rotate-12">
-               <span className="text-white font-bold text-lg lg:text-xl">I</span>
-            </motion.div>
             
           </motion.div>
 

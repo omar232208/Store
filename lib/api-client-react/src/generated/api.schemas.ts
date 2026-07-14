@@ -3,7 +3,7 @@
  * Do not edit manually.
  * Api
  * Sora Store API - Digital products store
- * OpenAPI spec version: 0.1.0
+ * OpenAPI spec version: 0.2.0
  */
 export interface HealthStatus {
   status: string;
@@ -22,6 +22,8 @@ export interface Category {
 export interface Product {
   id: number;
   nameAr: string;
+  /** @nullable */
+  descriptionAr?: string | null;
   categoryId: number;
   categorySlug: string;
   price: number;
@@ -37,6 +39,12 @@ export interface Product {
   rank?: number | null;
   /** @nullable */
   period?: string | null;
+  /** @nullable */
+  isFlashSale?: boolean | null;
+  /** @nullable */
+  featured?: boolean | null;
+  /** @nullable */
+  badge?: string | null;
 }
 
 export interface FlashSaleResponse {
@@ -61,6 +69,23 @@ export interface StoreStats {
   supportHours: string;
 }
 
+export interface BlogPost {
+  id: number;
+  titleAr: string;
+  slug: string;
+  excerptAr: string;
+  contentAr: string;
+  coverImage: string;
+  authorName: string;
+  /** @nullable */
+  authorAvatar?: string | null;
+  publishedAt: string;
+  readingMins: number;
+  tag: string;
+  /** @nullable */
+  views?: number | null;
+}
+
 export type ListProductsParams = {
 /**
  * @nullable
@@ -69,10 +94,38 @@ categoryId?: number | null;
 /**
  * @nullable
  */
+categorySlug?: string | null;
+/**
+ * @nullable
+ */
 featured?: boolean | null;
 /**
  * @nullable
  */
 limit?: number | null;
+/**
+ * price_asc | price_desc | rating | newest
+ * @nullable
+ */
+sort?: string | null;
+};
+
+export type SearchProductsParams = {
+q: string;
+/**
+ * @nullable
+ */
+limit?: number | null;
+};
+
+export type ListBlogPostsParams = {
+/**
+ * @nullable
+ */
+limit?: number | null;
+/**
+ * @nullable
+ */
+tag?: string | null;
 };
 

@@ -3,7 +3,7 @@
  * Do not edit manually.
  * Api
  * Sora Store API - Digital products store
- * OpenAPI spec version: 0.1.0
+ * OpenAPI spec version: 0.2.0
  */
 
 export type ListProductsParams = {
@@ -14,9 +14,18 @@ categoryId?: number | null;
 /**
  * @nullable
  */
+categorySlug?: string | null;
+/**
+ * @nullable
+ */
 featured?: boolean | null;
 /**
  * @nullable
  */
 limit?: number | null;
+/**
+ * price_asc | price_desc | rating | newest
+ * @nullable
+ */
+sort?: string | null;
 };

@@ -3,7 +3,7 @@
  * Do not edit manually.
  * Api
  * Sora Store API - Digital products store
- * OpenAPI spec version: 0.1.0
+ * OpenAPI spec version: 0.2.0
  */
 import {
   useQuery
@@ -16,12 +16,15 @@ import type {
 } from '@tanstack/react-query';
 
 import type {
+  BlogPost,
   Category,
   FlashSaleResponse,
   HealthStatus,
+  ListBlogPostsParams,
   ListProductsParams,
   Product,
   Review,
+  SearchProductsParams,
   StoreStats
 } from './api.schemas';
 
@@ -290,20 +293,27 @@ export function useListProducts<TData = Awaited<ReturnType<typeof listProducts>>
 
 
 
-export const getGetProductUrl = (id: number,) => {
+export const getSearchProductsUrl = (params: SearchProductsParams,) => {
+  const normalizedParams = new URLSearchParams();
 
+  Object.entries(params || {}).forEach(([key, value]) => {
 
+    if (value !== undefined) {
+      normalizedParams.append(key, value === null ? 'null' : String(value))
+    }
+  });
 
+  const stringifiedParams = normalizedParams.toString();
 
-  return `/api/products/${id}`
+  return stringifiedParams.length > 0 ? `/api/products/search?${stringifiedParams}` : `/api/products/search`
 }
 
 /**
- * @summary Get a single product
+ * @summary Search products by name
  */
-export const getProduct = async (id: number, options?: RequestInit): Promise<Product> => {
+export const searchProducts = async (params: SearchProductsParams, options?: RequestInit): Promise<Product[]> => {
 
-  return customFetch<Product>(getGetProductUrl(id),
+  return customFetch<Product[]>(getSearchProductsUrl(params),
   {
     ...options,
     method: 'GET'
@@ -316,45 +326,45 @@ export const getProduct = async (id: number, options?: RequestInit): Promise<Pro
 
 
 
-export const getGetProductQueryKey = (id: number,) => {
+export const getSearchProductsQueryKey = (params?: SearchProductsParams,) => {
     return [
-    `/api/products/${id}`
+    `/api/products/search`, ...(params ? [params] : [])
     ] as const;
     }
 
 
-export const getGetProductQueryOptions = <TData = Awaited<ReturnType<typeof getProduct>>, TError = ErrorType<void>>(id: number, options?: { query?:UseQueryOptions<Awaited<ReturnType<typeof getProduct>>, TError, TData>, request?: SecondParameter<typeof customFetch>}
+export const getSearchProductsQueryOptions = <TData = Awaited<ReturnType<typeof searchProducts>>, TError = ErrorType<unknown>>(params: SearchProductsParams, options?: { query?:UseQueryOptions<Awaited<ReturnType<typeof searchProducts>>, TError, TData>, request?: SecondParameter<typeof customFetch>}
 ) => {
 
 const {query: queryOptions, request: requestOptions} = options ?? {};
 
-  const queryKey =  queryOptions?.queryKey ?? getGetProductQueryKey(id);
+  const queryKey =  queryOptions?.queryKey ?? getSearchProductsQueryKey(params);
 
 
 
-    const queryFn: QueryFunction<Awaited<ReturnType<typeof getProduct>>> = ({ signal }) => getProduct(id, { signal, ...requestOptions });
+    const queryFn: QueryFunction<Awaited<ReturnType<typeof searchProducts>>> = ({ signal }) => searchProducts(params, { signal, ...requestOptions });
 
 
 
 
 
-   return  { queryKey, queryFn, enabled: id !== null && id !== undefined, ...queryOptions} as UseQueryOptions<Awaited<ReturnType<typeof getProduct>>, TError, TData> & { queryKey: QueryKey }
+   return  { queryKey, queryFn, ...queryOptions} as UseQueryOptions<Awaited<ReturnType<typeof searchProducts>>, TError, TData> & { queryKey: QueryKey }
 }
 
-export type GetProductQueryResult = NonNullable<Awaited<ReturnType<typeof getProduct>>>
-export type GetProductQueryError = ErrorType<void>
+export type SearchProductsQueryResult = NonNullable<Awaited<ReturnType<typeof searchProducts>>>
+export type SearchProductsQueryError = ErrorType<unknown>
 
 
 /**
- * @summary Get a single product
+ * @summary Search products by name
  */
 
-export function useGetProduct<TData = Awaited<ReturnType<typeof getProduct>>, TError = ErrorType<void>>(
- id: number, options?: { query?:UseQueryOptions<Awaited<ReturnType<typeof getProduct>>, TError, TData>, request?: SecondParameter<typeof customFetch>}
+export function useSearchProducts<TData = Awaited<ReturnType<typeof searchProducts>>, TError = ErrorType<unknown>>(
+ params: SearchProductsParams, options?: { query?:UseQueryOptions<Awaited<ReturnType<typeof searchProducts>>, TError, TData>, request?: SecondParameter<typeof customFetch>}
 
  ):  UseQueryResult<TData, TError> & { queryKey: QueryKey } {
 
-  const queryOptions = getGetProductQueryOptions(id,options)
+  const queryOptions = getSearchProductsQueryOptions(params,options)
 
   const query = useQuery(queryOptions) as  UseQueryResult<TData, TError> & { queryKey: QueryKey };
 
@@ -521,6 +531,160 @@ export function useListBestSellers<TData = Awaited<ReturnType<typeof listBestSel
 
 
 
+export const getGetProductUrl = (id: number,) => {
+
+
+
+
+  return `/api/products/${id}`
+}
+
+/**
+ * @summary Get a single product
+ */
+export const getProduct = async (id: number, options?: RequestInit): Promise<Product> => {
+
+  return customFetch<Product>(getGetProductUrl(id),
+  {
+    ...options,
+    method: 'GET'
+
+
+  }
+);}
+
+
+
+
+
+export const getGetProductQueryKey = (id: number,) => {
+    return [
+    `/api/products/${id}`
+    ] as const;
+    }
+
+
+export const getGetProductQueryOptions = <TData = Awaited<ReturnType<typeof getProduct>>, TError = ErrorType<void>>(id: number, options?: { query?:UseQueryOptions<Awaited<ReturnType<typeof getProduct>>, TError, TData>, request?: SecondParameter<typeof customFetch>}
+) => {
+
+const {query: queryOptions, request: requestOptions} = options ?? {};
+
+  const queryKey =  queryOptions?.queryKey ?? getGetProductQueryKey(id);
+
+
+
+    const queryFn: QueryFunction<Awaited<ReturnType<typeof getProduct>>> = ({ signal }) => getProduct(id, { signal, ...requestOptions });
+
+
+
+
+
+   return  { queryKey, queryFn, enabled: id !== null && id !== undefined, ...queryOptions} as UseQueryOptions<Awaited<ReturnType<typeof getProduct>>, TError, TData> & { queryKey: QueryKey }
+}
+
+export type GetProductQueryResult = NonNullable<Awaited<ReturnType<typeof getProduct>>>
+export type GetProductQueryError = ErrorType<void>
+
+
+/**
+ * @summary Get a single product
+ */
+
+export function useGetProduct<TData = Awaited<ReturnType<typeof getProduct>>, TError = ErrorType<void>>(
+ id: number, options?: { query?:UseQueryOptions<Awaited<ReturnType<typeof getProduct>>, TError, TData>, request?: SecondParameter<typeof customFetch>}
+
+ ):  UseQueryResult<TData, TError> & { queryKey: QueryKey } {
+
+  const queryOptions = getGetProductQueryOptions(id,options)
+
+  const query = useQuery(queryOptions) as  UseQueryResult<TData, TError> & { queryKey: QueryKey };
+
+  return withQueryKey(query, queryOptions.queryKey);
+}
+
+
+
+
+
+
+
+export const getGetRelatedProductsUrl = (id: number,) => {
+
+
+
+
+  return `/api/products/${id}/related`
+}
+
+/**
+ * @summary Get related products for a given product
+ */
+export const getRelatedProducts = async (id: number, options?: RequestInit): Promise<Product[]> => {
+
+  return customFetch<Product[]>(getGetRelatedProductsUrl(id),
+  {
+    ...options,
+    method: 'GET'
+
+
+  }
+);}
+
+
+
+
+
+export const getGetRelatedProductsQueryKey = (id: number,) => {
+    return [
+    `/api/products/${id}/related`
+    ] as const;
+    }
+
+
+export const getGetRelatedProductsQueryOptions = <TData = Awaited<ReturnType<typeof getRelatedProducts>>, TError = ErrorType<unknown>>(id: number, options?: { query?:UseQueryOptions<Awaited<ReturnType<typeof getRelatedProducts>>, TError, TData>, request?: SecondParameter<typeof customFetch>}
+) => {
+
+const {query: queryOptions, request: requestOptions} = options ?? {};
+
+  const queryKey =  queryOptions?.queryKey ?? getGetRelatedProductsQueryKey(id);
+
+
+
+    const queryFn: QueryFunction<Awaited<ReturnType<typeof getRelatedProducts>>> = ({ signal }) => getRelatedProducts(id, { signal, ...requestOptions });
+
+
+
+
+
+   return  { queryKey, queryFn, enabled: id !== null && id !== undefined, ...queryOptions} as UseQueryOptions<Awaited<ReturnType<typeof getRelatedProducts>>, TError, TData> & { queryKey: QueryKey }
+}
+
+export type GetRelatedProductsQueryResult = NonNullable<Awaited<ReturnType<typeof getRelatedProducts>>>
+export type GetRelatedProductsQueryError = ErrorType<unknown>
+
+
+/**
+ * @summary Get related products for a given product
+ */
+
+export function useGetRelatedProducts<TData = Awaited<ReturnType<typeof getRelatedProducts>>, TError = ErrorType<unknown>>(
+ id: number, options?: { query?:UseQueryOptions<Awaited<ReturnType<typeof getRelatedProducts>>, TError, TData>, request?: SecondParameter<typeof customFetch>}
+
+ ):  UseQueryResult<TData, TError> & { queryKey: QueryKey } {
+
+  const queryOptions = getGetRelatedProductsQueryOptions(id,options)
+
+  const query = useQuery(queryOptions) as  UseQueryResult<TData, TError> & { queryKey: QueryKey };
+
+  return withQueryKey(query, queryOptions.queryKey);
+}
+
+
+
+
+
+
+
 export const getListReviewsUrl = () => {
 
 
@@ -663,6 +827,167 @@ export function useGetStoreStats<TData = Awaited<ReturnType<typeof getStoreStats
  ):  UseQueryResult<TData, TError> & { queryKey: QueryKey } {
 
   const queryOptions = getGetStoreStatsQueryOptions(options)
+
+  const query = useQuery(queryOptions) as  UseQueryResult<TData, TError> & { queryKey: QueryKey };
+
+  return withQueryKey(query, queryOptions.queryKey);
+}
+
+
+
+
+
+
+
+export const getListBlogPostsUrl = (params?: ListBlogPostsParams,) => {
+  const normalizedParams = new URLSearchParams();
+
+  Object.entries(params || {}).forEach(([key, value]) => {
+
+    if (value !== undefined) {
+      normalizedParams.append(key, value === null ? 'null' : String(value))
+    }
+  });
+
+  const stringifiedParams = normalizedParams.toString();
+
+  return stringifiedParams.length > 0 ? `/api/blog/posts?${stringifiedParams}` : `/api/blog/posts`
+}
+
+/**
+ * @summary List blog posts
+ */
+export const listBlogPosts = async (params?: ListBlogPostsParams, options?: RequestInit): Promise<BlogPost[]> => {
+
+  return customFetch<BlogPost[]>(getListBlogPostsUrl(params),
+  {
+    ...options,
+    method: 'GET'
+
+
+  }
+);}
+
+
+
+
+
+export const getListBlogPostsQueryKey = (params?: ListBlogPostsParams,) => {
+    return [
+    `/api/blog/posts`, ...(params ? [params] : [])
+    ] as const;
+    }
+
+
+export const getListBlogPostsQueryOptions = <TData = Awaited<ReturnType<typeof listBlogPosts>>, TError = ErrorType<unknown>>(params?: ListBlogPostsParams, options?: { query?:UseQueryOptions<Awaited<ReturnType<typeof listBlogPosts>>, TError, TData>, request?: SecondParameter<typeof customFetch>}
+) => {
+
+const {query: queryOptions, request: requestOptions} = options ?? {};
+
+  const queryKey =  queryOptions?.queryKey ?? getListBlogPostsQueryKey(params);
+
+
+
+    const queryFn: QueryFunction<Awaited<ReturnType<typeof listBlogPosts>>> = ({ signal }) => listBlogPosts(params, { signal, ...requestOptions });
+
+
+
+
+
+   return  { queryKey, queryFn, ...queryOptions} as UseQueryOptions<Awaited<ReturnType<typeof listBlogPosts>>, TError, TData> & { queryKey: QueryKey }
+}
+
+export type ListBlogPostsQueryResult = NonNullable<Awaited<ReturnType<typeof listBlogPosts>>>
+export type ListBlogPostsQueryError = ErrorType<unknown>
+
+
+/**
+ * @summary List blog posts
+ */
+
+export function useListBlogPosts<TData = Awaited<ReturnType<typeof listBlogPosts>>, TError = ErrorType<unknown>>(
+ params?: ListBlogPostsParams, options?: { query?:UseQueryOptions<Awaited<ReturnType<typeof listBlogPosts>>, TError, TData>, request?: SecondParameter<typeof customFetch>}
+
+ ):  UseQueryResult<TData, TError> & { queryKey: QueryKey } {
+
+  const queryOptions = getListBlogPostsQueryOptions(params,options)
+
+  const query = useQuery(queryOptions) as  UseQueryResult<TData, TError> & { queryKey: QueryKey };
+
+  return withQueryKey(query, queryOptions.queryKey);
+}
+
+
+
+
+
+
+
+export const getGetBlogPostUrl = (slug: string,) => {
+
+
+
+
+  return `/api/blog/posts/${slug}`
+}
+
+/**
+ * @summary Get a single blog post by slug
+ */
+export const getBlogPost = async (slug: string, options?: RequestInit): Promise<BlogPost> => {
+
+  return customFetch<BlogPost>(getGetBlogPostUrl(slug),
+  {
+    ...options,
+    method: 'GET'
+
+
+  }
+);}
+
+
+
+
+
+export const getGetBlogPostQueryKey = (slug: string,) => {
+    return [
+    `/api/blog/posts/${slug}`
+    ] as const;
+    }
+
+
+export const getGetBlogPostQueryOptions = <TData = Awaited<ReturnType<typeof getBlogPost>>, TError = ErrorType<void>>(slug: string, options?: { query?:UseQueryOptions<Awaited<ReturnType<typeof getBlogPost>>, TError, TData>, request?: SecondParameter<typeof customFetch>}
+) => {
+
+const {query: queryOptions, request: requestOptions} = options ?? {};
+
+  const queryKey =  queryOptions?.queryKey ?? getGetBlogPostQueryKey(slug);
+
+
+
+    const queryFn: QueryFunction<Awaited<ReturnType<typeof getBlogPost>>> = ({ signal }) => getBlogPost(slug, { signal, ...requestOptions });
+
+
+
+
+
+   return  { queryKey, queryFn, enabled: slug !== null && slug !== undefined, ...queryOptions} as UseQueryOptions<Awaited<ReturnType<typeof getBlogPost>>, TError, TData> & { queryKey: QueryKey }
+}
+
+export type GetBlogPostQueryResult = NonNullable<Awaited<ReturnType<typeof getBlogPost>>>
+export type GetBlogPostQueryError = ErrorType<void>
+
+
+/**
+ * @summary Get a single blog post by slug
+ */
+
+export function useGetBlogPost<TData = Awaited<ReturnType<typeof getBlogPost>>, TError = ErrorType<void>>(
+ slug: string, options?: { query?:UseQueryOptions<Awaited<ReturnType<typeof getBlogPost>>, TError, TData>, request?: SecondParameter<typeof customFetch>}
+
+ ):  UseQueryResult<TData, TError> & { queryKey: QueryKey } {
+
+  const queryOptions = getGetBlogPostQueryOptions(slug,options)
 
   const query = useQuery(queryOptions) as  UseQueryResult<TData, TError> & { queryKey: QueryKey };
 

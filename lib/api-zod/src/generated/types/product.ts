@@ -3,12 +3,14 @@
  * Do not edit manually.
  * Api
  * Sora Store API - Digital products store
- * OpenAPI spec version: 0.1.0
+ * OpenAPI spec version: 0.2.0
  */
 
 export interface Product {
   id: number;
   nameAr: string;
+  /** @nullable */
+  descriptionAr?: string | null;
   categoryId: number;
   categorySlug: string;
   price: number;
@@ -24,4 +26,10 @@ export interface Product {
   rank?: number | null;
   /** @nullable */
   period?: string | null;
+  /** @nullable */
+  isFlashSale?: boolean | null;
+  /** @nullable */
+  featured?: boolean | null;
+  /** @nullable */
+  badge?: string | null;
 }

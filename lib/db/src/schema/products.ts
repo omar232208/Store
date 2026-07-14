@@ -5,6 +5,7 @@ import { z } from "zod/v4";
 export const productsTable = pgTable("products", {
   id: serial("id").primaryKey(),
   nameAr: text("name_ar").notNull(),
+  descriptionAr: text("description_ar"),
   categoryId: integer("category_id").notNull(),
   categorySlug: text("category_slug").notNull(),
   price: doublePrecision("price").notNull(),
@@ -19,6 +20,7 @@ export const productsTable = pgTable("products", {
   period: text("period"),
   isFlashSale: boolean("is_flash_sale").default(false),
   featured: boolean("featured").default(false),
+  badge: text("badge"),
 });
 
 export const insertProductSchema = createInsertSchema(productsTable).omit({ id: true });

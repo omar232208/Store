@@ -1,10 +1,19 @@
 import React, { useState } from 'react';
-import { Link } from 'wouter';
+import { Link, useLocation } from 'wouter';
 import { Search, Heart, ShoppingBag, User, Moon, ShoppingBasket, Menu, X } from 'lucide-react';
 import { Button } from '@/components/ui/button';
+import { useCart } from '@/contexts/CartContext';
+import { useWishlist } from '@/contexts/WishlistContext';
 
 export default function Navbar() {
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
+  const [, setLocation] = useLocation();
+  const { count: cartCount } = useCart();
+  const { count: wishlistCount } = useWishlist();
+
+  const handleSearchClick = () => {
+    setLocation('/search');
+  };
 
   return (
     <>
@@ -19,14 +28,15 @@ export default function Navbar() {
           </Link>
 
           {/* Desktop Search */}
-          <div className="flex-1 max-w-xl hidden lg:flex items-center relative mx-8">
+          <div className="flex-1 max-w-xl hidden lg:flex items-center relative mx-8" onClick={handleSearchClick}>
             <div className="absolute inset-y-0 right-4 flex items-center pointer-events-none">
               <Search className="h-5 w-5 text-muted-foreground" />
             </div>
             <input
-              type="search"
+              type="text"
               placeholder="ابحث عن بطاقات، اشتراكات، ألعاب..."
-              className="w-full bg-muted/50 border border-border rounded-full h-12 pr-12 pl-4 text-sm focus:outline-none focus:ring-2 focus:ring-primary/50 transition-all placeholder:text-muted-foreground text-foreground"
+              readOnly
+              className="w-full bg-muted/50 border border-border rounded-full h-12 pr-12 pl-4 text-sm focus:outline-none focus:ring-2 focus:ring-primary/50 transition-all placeholder:text-muted-foreground text-foreground cursor-pointer"
             />
           </div>
 
@@ -44,16 +54,19 @@ export default function Navbar() {
             <button className="hidden sm:flex w-10 h-10 rounded-full hover:bg-muted items-center justify-center text-muted-foreground transition-colors">
               <Moon size={20} />
             </button>
-            <button className="relative flex w-10 h-10 rounded-full hover:bg-muted items-center justify-center text-muted-foreground transition-colors">
+            <button className="lg:hidden flex w-10 h-10 rounded-full hover:bg-muted items-center justify-center text-muted-foreground transition-colors" onClick={handleSearchClick}>
+              <Search size={20} />
+            </button>
+            <Link href="/wishlist" className="relative flex w-10 h-10 rounded-full hover:bg-muted items-center justify-center text-muted-foreground transition-colors">
               <Heart size={20} />
-              <span className="absolute top-1.5 right-1.5 w-4 h-4 bg-secondary text-white text-[10px] font-bold rounded-full flex items-center justify-center">0</span>
-            </button>
-            <button className="relative flex w-10 h-10 rounded-full hover:bg-muted items-center justify-center text-muted-foreground transition-colors">
+              {wishlistCount > 0 && <span className="absolute top-1.5 right-1.5 w-4 h-4 bg-secondary text-white text-[10px] font-bold rounded-full flex items-center justify-center">{wishlistCount}</span>}
+            </Link>
+            <Link href="/cart" className="relative flex w-10 h-10 rounded-full hover:bg-muted items-center justify-center text-muted-foreground transition-colors">
               <ShoppingBag size={20} />
-              <span className="absolute top-1.5 right-1.5 w-4 h-4 bg-primary text-white text-[10px] font-bold rounded-full flex items-center justify-center">2</span>
-            </button>
+              {cartCount > 0 && <span className="absolute top-1.5 right-1.5 w-4 h-4 bg-primary text-white text-[10px] font-bold rounded-full flex items-center justify-center">{cartCount}</span>}
+            </Link>
             
-            <div className="hidden sm:flex items-center gap-2 border-r border-border pr-4 mr-2">
+            <Link href="/contact" className="hidden sm:flex items-center gap-2 border-r border-border pr-4 mr-2">
               <div className="w-10 h-10 rounded-full bg-muted flex items-center justify-center overflow-hidden">
                 <User size={20} className="text-muted-foreground" />
               </div>
@@ -61,7 +74,7 @@ export default function Navbar() {
                 <span className="text-xs text-muted-foreground">مرحباً بك</span>
                 <span className="text-sm font-bold">حسابي</span>
               </div>
-            </div>
+            </Link>
 
             <Button variant="ghost" size="icon" className="lg:hidden ml-1 text-foreground" onClick={() => setIsMobileMenuOpen(true)}>
               <Menu size={24} />
@@ -88,14 +101,15 @@ export default function Navbar() {
           </div>
 
           <div className="p-4">
-            <div className="relative mb-6">
+            <div className="relative mb-6" onClick={() => { setIsMobileMenuOpen(false); handleSearchClick(); }}>
               <div className="absolute inset-y-0 right-4 flex items-center pointer-events-none">
                 <Search className="h-5 w-5 text-muted-foreground" />
               </div>
               <input
-                type="search"
+                type="text"
                 placeholder="ابحث عن بطاقات، اشتراكات، ألعاب..."
-                className="w-full bg-muted/50 border border-border rounded-full h-12 pr-12 pl-4 text-sm focus:outline-none focus:ring-2 focus:ring-primary/50 transition-all placeholder:text-muted-foreground text-foreground"
+                readOnly
+                className="w-full bg-muted/50 border border-border rounded-full h-12 pr-12 pl-4 text-sm focus:outline-none focus:ring-2 focus:ring-primary/50 transition-all placeholder:text-muted-foreground text-foreground cursor-pointer"
               />
             </div>
 

@@ -1,24 +1,20 @@
 openapi: 3.1.0
 info:
   title: Api
-  version: 0.1.0
+  version: 0.2.0
   description: Sora Store API - Digital products store
 servers:
   - url: /api
     description: Base API path
 tags:
   - name: health
-    description: Health operations
   - name: products
-    description: Product operations
   - name: categories
-    description: Category operations
   - name: flash-sales
-    description: Flash sale operations
   - name: reviews
-    description: Customer review operations
   - name: stats
-    description: Store statistics
+  - name: blog
+  - name: search
 
 paths:
   /healthz:
@@ -59,6 +55,10 @@ paths:
           in: query
           schema:
             type: ["integer", "null"]
+        - name: categorySlug
+          in: query
+          schema:
+            type: ["string", "null"]
         - name: featured
           in: query
           schema:
@@ -67,9 +67,67 @@ paths:
           in: query
           schema:
             type: ["integer", "null"]
+        - name: sort
+          in: query
+          schema:
+            type: ["string", "null"]
+            description: "price_asc | price_desc | rating | newest"
       responses:
         "200":
           description: List of products
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/Product"
+
+  /products/search:
+    get:
+      operationId: searchProducts
+      tags: [search]
+      summary: Search products by name
+      parameters:
+        - name: q
+          in: query
+          required: true
+          schema:
+            type: string
+        - name: limit
+          in: query
+          schema:
+            type: ["integer", "null"]
+      responses:
+        "200":
+          description: Search results
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/Product"
+
+  /products/flash-sales:
+    get:
+      operationId: listFlashSaleProducts
+      tags: [flash-sales]
+      summary: Get current flash sale products
+      responses:
+        "200":
+          description: Flash sale products with countdown
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/FlashSaleResponse"
+
+  /products/best-sellers:
+    get:
+      operationId: listBestSellers
+      tags: [products]
+      summary: Get best-selling products
+      responses:
+        "200":
+          description: Best seller products
           content:
             application/json:
               schema:
@@ -98,27 +156,20 @@ paths:
         "404":
           description: Not found
 
-  /products/flash-sales:
+  /products/{id}/related:
     get:
-      operationId: listFlashSaleProducts
-      tags: [flash-sales]
-      summary: Get current flash sale products
-      responses:
-        "200":
-          description: Flash sale products with countdown
-          content:
-            application/json:
-              schema:
-                $ref: "#/components/schemas/FlashSaleResponse"
-
-  /products/best-sellers:
-    get:
-      operationId: listBestSellers
+      operationId: getRelatedProducts
       tags: [products]
-      summary: Get best-selling products
+      summary: Get related products for a given product
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
       responses:
         "200":
-          description: Best seller products
+          description: Related products
           content:
             application/json:
               schema:
@@ -154,15 +205,59 @@ paths:
               schema:
                 $ref: "#/components/schemas/StoreStats"
 
+  /blog/posts:
+    get:
+      operationId: listBlogPosts
+      tags: [blog]
+      summary: List blog posts
+      parameters:
+        - name: limit
+          in: query
+          schema:
+            type: ["integer", "null"]
+        - name: tag
+          in: query
+          schema:
+            type: ["string", "null"]
+      responses:
+        "200":
+          description: List of blog posts
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/BlogPost"
+
+  /blog/posts/{slug}:
+    get:
+      operationId: getBlogPost
+      tags: [blog]
+      summary: Get a single blog post by slug
+      parameters:
+        - name: slug
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        "200":
+          description: Blog post
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/BlogPost"
+        "404":
+          description: Not found
+
 components:
   schemas:
     HealthStatus:
       type: object
+      required: [status]
       properties:
         status:
           type: string
-      required:
-        - status
 
     Category:
       type: object
@@ -193,6 +288,8 @@ components:
           type: integer
         nameAr:
           type: string
+        descriptionAr:
+          type: ["string", "null"]
         categoryId:
           type: integer
         categorySlug:
@@ -216,6 +313,12 @@ components:
         rank:
           type: ["integer", "null"]
         period:
+          type: ["string", "null"]
+        isFlashSale:
+          type: ["boolean", "null"]
+        featured:
+          type: ["boolean", "null"]
+        badge:
           type: ["string", "null"]
 
     FlashSaleResponse:
@@ -259,3 +362,33 @@ components:
           type: string
         supportHours:
           type: string
+
+    BlogPost:
+      type: object
+      required: [id, titleAr, slug, excerptAr, contentAr, coverImage, authorName, publishedAt, readingMins, tag]
+      properties:
+        id:
+          type: integer
+        titleAr:
+          type: string
+        slug:
+          type: string
+        excerptAr:
+          type: string
+        contentAr:
+          type: string
+        coverImage:
+          type: string
+        authorName:
+          type: string
+        authorAvatar:
+          type: ["string", "null"]
+        publishedAt:
+          type: string
+          format: date-time
+        readingMins:
+          type: integer
+        tag:
+          type: string
+        views:
+          type: ["integer", "null"]

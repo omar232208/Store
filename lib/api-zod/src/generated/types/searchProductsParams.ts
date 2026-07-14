@@ -5,9 +5,11 @@
  * Sora Store API - Digital products store
  * OpenAPI spec version: 0.2.0
  */
-import type { Product } from './product';
 
-export interface FlashSaleResponse {
-  products: Product[];
-  endsAt: Date;
-}
+export type SearchProductsParams = {
+q: string;
+/**
+ * @nullable
+ */
+limit?: number | null;
+};

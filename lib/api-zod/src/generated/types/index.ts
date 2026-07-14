@@ -3,13 +3,16 @@
  * Do not edit manually.
  * Api
  * Sora Store API - Digital products store
- * OpenAPI spec version: 0.1.0
+ * OpenAPI spec version: 0.2.0
  */
 
+export * from './blogPost';
 export * from './category';
 export * from './flashSaleResponse';
 export * from './healthStatus';
+export * from './listBlogPostsParams';
 export * from './listProductsParams';
 export * from './product';
 export * from './review';
+export * from './searchProductsParams';
 export * from './storeStats';

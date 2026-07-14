@@ -3,7 +3,7 @@
  * Do not edit manually.
  * Api
  * Sora Store API - Digital products store
- * OpenAPI spec version: 0.1.0
+ * OpenAPI spec version: 0.2.0
  */
 import * as zod from 'zod';
 
@@ -36,13 +36,16 @@ export const ListCategoriesResponse = zod.array(ListCategoriesResponseItem)
  */
 export const ListProductsQueryParams = zod.object({
   "categoryId": zod.coerce.number().nullish(),
+  "categorySlug": zod.coerce.string().nullish(),
   "featured": zod.coerce.boolean().nullish(),
-  "limit": zod.coerce.number().nullish()
+  "limit": zod.coerce.number().nullish(),
+  "sort": zod.coerce.string().nullish()
 })
 
 export const ListProductsResponseItem = zod.object({
   "id": zod.number(),
   "nameAr": zod.string(),
+  "descriptionAr": zod.string().nullish(),
   "categoryId": zod.number(),
   "categorySlug": zod.string(),
   "price": zod.number(),
@@ -54,9 +57,97 @@ export const ListProductsResponseItem = zod.object({
   "currency": zod.string(),
   "isBestSeller": zod.boolean().nullish(),
   "rank": zod.number().nullish(),
-  "period": zod.string().nullish()
+  "period": zod.string().nullish(),
+  "isFlashSale": zod.boolean().nullish(),
+  "featured": zod.boolean().nullish(),
+  "badge": zod.string().nullish()
 })
 export const ListProductsResponse = zod.array(ListProductsResponseItem)
+
+
+/**
+ * @summary Search products by name
+ */
+export const SearchProductsQueryParams = zod.object({
+  "q": zod.coerce.string(),
+  "limit": zod.coerce.number().nullish()
+})
+
+export const SearchProductsResponseItem = zod.object({
+  "id": zod.number(),
+  "nameAr": zod.string(),
+  "descriptionAr": zod.string().nullish(),
+  "categoryId": zod.number(),
+  "categorySlug": zod.string(),
+  "price": zod.number(),
+  "originalPrice": zod.number(),
+  "discount": zod.number(),
+  "rating": zod.number(),
+  "reviewCount": zod.number(),
+  "image": zod.string(),
+  "currency": zod.string(),
+  "isBestSeller": zod.boolean().nullish(),
+  "rank": zod.number().nullish(),
+  "period": zod.string().nullish(),
+  "isFlashSale": zod.boolean().nullish(),
+  "featured": zod.boolean().nullish(),
+  "badge": zod.string().nullish()
+})
+export const SearchProductsResponse = zod.array(SearchProductsResponseItem)
+
+
+/**
+ * @summary Get current flash sale products
+ */
+export const ListFlashSaleProductsResponse = zod.object({
+  "products": zod.array(zod.object({
+  "id": zod.number(),
+  "nameAr": zod.string(),
+  "descriptionAr": zod.string().nullish(),
+  "categoryId": zod.number(),
+  "categorySlug": zod.string(),
+  "price": zod.number(),
+  "originalPrice": zod.number(),
+  "discount": zod.number(),
+  "rating": zod.number(),
+  "reviewCount": zod.number(),
+  "image": zod.string(),
+  "currency": zod.string(),
+  "isBestSeller": zod.boolean().nullish(),
+  "rank": zod.number().nullish(),
+  "period": zod.string().nullish(),
+  "isFlashSale": zod.boolean().nullish(),
+  "featured": zod.boolean().nullish(),
+  "badge": zod.string().nullish()
+})),
+  "endsAt": zod.coerce.date()
+})
+
+
+/**
+ * @summary Get best-selling products
+ */
+export const ListBestSellersResponseItem = zod.object({
+  "id": zod.number(),
+  "nameAr": zod.string(),
+  "descriptionAr": zod.string().nullish(),
+  "categoryId": zod.number(),
+  "categorySlug": zod.string(),
+  "price": zod.number(),
+  "originalPrice": zod.number(),
+  "discount": zod.number(),
+  "rating": zod.number(),
+  "reviewCount": zod.number(),
+  "image": zod.string(),
+  "currency": zod.string(),
+  "isBestSeller": zod.boolean().nullish(),
+  "rank": zod.number().nullish(),
+  "period": zod.string().nullish(),
+  "isFlashSale": zod.boolean().nullish(),
+  "featured": zod.boolean().nullish(),
+  "badge": zod.string().nullish()
+})
+export const ListBestSellersResponse = zod.array(ListBestSellersResponseItem)
 
 
 /**
@@ -69,6 +160,7 @@ export const GetProductParams = zod.object({
 export const GetProductResponse = zod.object({
   "id": zod.number(),
   "nameAr": zod.string(),
+  "descriptionAr": zod.string().nullish(),
   "categoryId": zod.number(),
   "categorySlug": zod.string(),
   "price": zod.number(),
@@ -80,17 +172,24 @@ export const GetProductResponse = zod.object({
   "currency": zod.string(),
   "isBestSeller": zod.boolean().nullish(),
   "rank": zod.number().nullish(),
-  "period": zod.string().nullish()
+  "period": zod.string().nullish(),
+  "isFlashSale": zod.boolean().nullish(),
+  "featured": zod.boolean().nullish(),
+  "badge": zod.string().nullish()
 })
 
 
 /**
- * @summary Get current flash sale products
+ * @summary Get related products for a given product
  */
-export const ListFlashSaleProductsResponse = zod.object({
-  "products": zod.array(zod.object({
+export const GetRelatedProductsParams = zod.object({
+  "id": zod.coerce.number()
+})
+
+export const GetRelatedProductsResponseItem = zod.object({
   "id": zod.number(),
   "nameAr": zod.string(),
+  "descriptionAr": zod.string().nullish(),
   "categoryId": zod.number(),
   "categorySlug": zod.string(),
   "price": zod.number(),
@@ -102,32 +201,12 @@ export const ListFlashSaleProductsResponse = zod.object({
   "currency": zod.string(),
   "isBestSeller": zod.boolean().nullish(),
   "rank": zod.number().nullish(),
-  "period": zod.string().nullish()
-})),
-  "endsAt": zod.coerce.date()
+  "period": zod.string().nullish(),
+  "isFlashSale": zod.boolean().nullish(),
+  "featured": zod.boolean().nullish(),
+  "badge": zod.string().nullish()
 })
-
-
-/**
- * @summary Get best-selling products
- */
-export const ListBestSellersResponseItem = zod.object({
-  "id": zod.number(),
-  "nameAr": zod.string(),
-  "categoryId": zod.number(),
-  "categorySlug": zod.string(),
-  "price": zod.number(),
-  "originalPrice": zod.number(),
-  "discount": zod.number(),
-  "rating": zod.number(),
-  "reviewCount": zod.number(),
-  "image": zod.string(),
-  "currency": zod.string(),
-  "isBestSeller": zod.boolean().nullish(),
-  "rank": zod.number().nullish(),
-  "period": zod.string().nullish()
-})
-export const ListBestSellersResponse = zod.array(ListBestSellersResponseItem)
+export const GetRelatedProductsResponse = zod.array(GetRelatedProductsResponseItem)
 
 
 /**
@@ -152,6 +231,54 @@ export const GetStoreStatsResponse = zod.object({
   "orders": zod.string(),
   "products": zod.string(),
   "supportHours": zod.string()
+})
+
+
+/**
+ * @summary List blog posts
+ */
+export const ListBlogPostsQueryParams = zod.object({
+  "limit": zod.coerce.number().nullish(),
+  "tag": zod.coerce.string().nullish()
+})
+
+export const ListBlogPostsResponseItem = zod.object({
+  "id": zod.number(),
+  "titleAr": zod.string(),
+  "slug": zod.string(),
+  "excerptAr": zod.string(),
+  "contentAr": zod.string(),
+  "coverImage": zod.string(),
+  "authorName": zod.string(),
+  "authorAvatar": zod.string().nullish(),
+  "publishedAt": zod.coerce.date(),
+  "readingMins": zod.number(),
+  "tag": zod.string(),
+  "views": zod.number().nullish()
+})
+export const ListBlogPostsResponse = zod.array(ListBlogPostsResponseItem)
+
+
+/**
+ * @summary Get a single blog post by slug
+ */
+export const GetBlogPostParams = zod.object({
+  "slug": zod.coerce.string()
+})
+
+export const GetBlogPostResponse = zod.object({
+  "id": zod.number(),
+  "titleAr": zod.string(),
+  "slug": zod.string(),
+  "excerptAr": zod.string(),
+  "contentAr": zod.string(),
+  "coverImage": zod.string(),
+  "authorName": zod.string(),
+  "authorAvatar": zod.string().nullish(),
+  "publishedAt": zod.coerce.date(),
+  "readingMins": zod.number(),
+  "tag": zod.string(),
+  "views": zod.number().nullish()
 })
 
 
